@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutoCars</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0d121b;color:white;font-family:Arial,sans-serif}
+header{background:#172130;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:30px;font-weight:900}
+.logo span{color:#ff414b}
+button{cursor:pointer;border:0}
+nav button{background:#2b394c;color:white;padding:12px;border-radius:8px}
+.hero{padding:55px 6%;background:linear-gradient(110deg,#34445c,#111722)}
+.hero h1{font-size:55px;margin:10px 0;color:#ff414b}
+.hero p{color:#b8c6d8}
+.container{padding:35px 5%}
+.filters{display:flex;gap:12px;flex-wrap:wrap;margin:25px 0}
+input,select{padding:13px;border-radius:8px;border:1px solid #43546b;background:#253246;color:white}
+.filters input{flex:1;min-width:200px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:18px}
+.card{background:#1b2636;border:1px solid #34465d;border-radius:14px;overflow:hidden}
+.visual{height:140px;background:linear-gradient(120deg,#364c65,#111821);display:flex;justify-content:center;align-items:center;font-size:65px}
+.info{padding:18px}
+.code{color:#ff626a;font-weight:bold;font-size:13px}
+.info h3{font-size:17px;min-height:45px}
+.muted{color:#b2c0d2;font-size:13px}
+.price{font-size:24px;font-weight:bold;margin:15px 0}
+.add{background:#ef3b45;color:white;padding:13px;width:100%;border-radius:8px;font-weight:bold}
+.panel{background:#1b2636;padding:25px;border-radius:15px;margin:20px 0}
+.item{padding:15px 0;border-bottom:1px solid #40516a}
+.small{background:#364b64;color:white;padding:9px 12px;border-radius:7px;margin:3px}
+.total{font-size:25px;color:#ff626a;font-weight:bold}
+.form{display:grid;gap:12px;max-width:500px}
+.form input{width:100%}
+.whatsapp{background:#169b58;color:white;padding:15px;border-radius:8px;font-weight:bold}
+.hidden{display:none}
+footer{text-align:center;padding:30px;background:#151d29;color:#aebbd0}
+a{color:#6be0a2}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">🚗 Auto<span>Cars</span></div>
+<nav>
+<button onclick="showPage('catalog')">Каталог</button>
+<button onclick="showPage('cart')">🛒 Корзина (<span id="count">0</span>)</button>
+</nav>
+<b>📞 +7 778 501 93 88</b>
+</header>
+
+<section class="hero">
+<p>HI-Q BRAKE SYSTEM</p>
+<h1>AutoCars</h1>
+<h2>Магазин тормозных колодок и дисков</h2>
+<p>Поиск по SP номеру, марке и модели автомобиля</p>
+</section>
+
+<main class="container">
+
+<section id="catalog">
+<h2>🔧 Каталог автозапчастей</h2>
+<p class="muted">20 марок автомобилей | HI-Q | Демонстрационные цены</p>
+
+<div class="filters">
+<input id="search" placeholder="Введите SP номер или название..." oninput="render()">
+
+<select id="brand" onchange="updateModels()">
+<option value="">Все марки</option>
+</select>
+
+<select id="model" onchange="render()">
+<option value="">Все модели</option>
+</select>
+
+<select id="category" onchange="render()">
+<option value="">Все категории</option>
+<option>Передние колодки</option>
+<option>Задние колодки</option>
+<option>Тормозные диски</option>
+</select>
+</div>
+
+<p id="found"></p>
+<div class="grid" id="grid"></div>
+</section>
+
+<section id="cart" class="hidden">
+<h2>🛒 Корзина</h2>
+
+<div class="panel">
+<div id="items"></div>
+<h3 class="total" id="total">Итого: 0 ₸</h3>
+</div>
+
+<div class="panel">
+<h2>Оформление заказа</h2>
+<div class="form">
+<input id="customer" placeholder="Ваше имя">
+<input id="phone" placeholder="Номер телефона">
+<input id="customerCar" placeholder="Ваш автомобиль">
+<button class="whatsapp" onclick="checkout()">
+📱 Отправить заказ в WhatsApp
+</button>
+</div>
+</div>
+</section>
+
+</main>
+
+<footer>
+<h2>AutoCars</h2>
+<p>Магазин автозапчастей HI-Q</p>
+<p>📞 +7 778 501 93 88</p>
+<a href="https://wa.me/77785019388" target="_blank">WhatsApp</a>
+</footer>
+
+<script>
+const products = [{"id": 1, "brand": "Toyota", "model": "Camry", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "SP1239", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 2, "brand": "Toyota", "model": "Camry", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "SP1155", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 3, "brand": "Toyota", "model": "Camry", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "SP1196", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 4, "brand": "Toyota", "model": "Corolla", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "SP1403", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 5, "brand": "Toyota", "model": "Corolla", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "SP1241", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 6, "brand": "Toyota", "model": "Corolla", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 7, "brand": "Toyota", "model": "RAV4", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 8, "brand": "Toyota", "model": "RAV4", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 9, "brand": "Toyota", "model": "RAV4", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 10, "brand": "Toyota", "model": "Prado", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 11, "brand": "Toyota", "model": "Prado", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 12, "brand": "Toyota", "model": "Prado", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 13, "brand": "Toyota", "model": "Land Cruiser", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 14, "brand": "Toyota", "model": "Land Cruiser", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 15, "brand": "Toyota", "model": "Land Cruiser", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 16, "brand": "Lexus", "model": "RX", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 17, "brand": "Lexus", "model": "RX", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 18, "brand": "Lexus", "model": "RX", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 19, "brand": "Lexus", "model": "ES", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 20, "brand": "Lexus", "model": "ES", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 21, "brand": "Lexus", "model": "ES", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 22, "brand": "Lexus", "model": "LX", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 23, "brand": "Lexus", "model": "LX", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 24, "brand": "Lexus", "model": "LX", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 25, "brand": "Lexus", "model": "GX", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 26, "brand": "Lexus", "model": "GX", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 27, "brand": "Lexus", "model": "GX", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 28, "brand": "Hyundai", "model": "Accent", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 29, "brand": "Hyundai", "model": "Accent", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 30, "brand": "Hyundai", "model": "Accent", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 31, "brand": "Hyundai", "model": "Elantra", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 32, "brand": "Hyundai", "model": "Elantra", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 33, "brand": "Hyundai", "model": "Elantra", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 34, "brand": "Hyundai", "model": "Sonata", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 35, "brand": "Hyundai", "model": "Sonata", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 36, "brand": "Hyundai", "model": "Sonata", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 37, "brand": "Hyundai", "model": "Tucson", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 38, "brand": "Hyundai", "model": "Tucson", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 39, "brand": "Hyundai", "model": "Tucson", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 40, "brand": "Kia", "model": "Rio", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 41, "brand": "Kia", "model": "Rio", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 42, "brand": "Kia", "model": "Rio", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 43, "brand": "Kia", "model": "K5", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 44, "brand": "Kia", "model": "K5", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 45, "brand": "Kia", "model": "K5", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 46, "brand": "Kia", "model": "Sportage", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 47, "brand": "Kia", "model": "Sportage", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 48, "brand": "Kia", "model": "Sportage", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 49, "brand": "Kia", "model": "Sorento", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 50, "brand": "Kia", "model": "Sorento", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 51, "brand": "Kia", "model": "Sorento", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 52, "brand": "Chevrolet", "model": "Cobalt", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 53, "brand": "Chevrolet", "model": "Cobalt", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 54, "brand": "Chevrolet", "model": "Cobalt", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 55, "brand": "Chevrolet", "model": "Onix", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 56, "brand": "Chevrolet", "model": "Onix", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 57, "brand": "Chevrolet", "model": "Onix", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 58, "brand": "Chevrolet", "model": "Nexia", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 59, "brand": "Chevrolet", "model": "Nexia", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 60, "brand": "Chevrolet", "model": "Nexia", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 61, "brand": "Chevrolet", "model": "Cruze", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 62, "brand": "Chevrolet", "model": "Cruze", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 63, "brand": "Chevrolet", "model": "Cruze", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 64, "brand": "Nissan", "model": "Qashqai", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 65, "brand": "Nissan", "model": "Qashqai", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 66, "brand": "Nissan", "model": "Qashqai", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 67, "brand": "Nissan", "model": "X-Trail", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 68, "brand": "Nissan", "model": "X-Trail", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 69, "brand": "Nissan", "model": "X-Trail", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 70, "brand": "Nissan", "model": "Teana", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 71, "brand": "Nissan", "model": "Teana", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 72, "brand": "Nissan", "model": "Teana", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 73, "brand": "Nissan", "model": "Almera", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 74, "brand": "Nissan", "model": "Almera", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 75, "brand": "Nissan", "model": "Almera", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 76, "brand": "Honda", "model": "Civic", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 77, "brand": "Honda", "model": "Civic", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 78, "brand": "Honda", "model": "Civic", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 79, "brand": "Honda", "model": "Accord", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 80, "brand": "Honda", "model": "Accord", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 81, "brand": "Honda", "model": "Accord", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 82, "brand": "Honda", "model": "CR-V", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 83, "brand": "Honda", "model": "CR-V", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 84, "brand": "Honda", "model": "CR-V", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 85, "brand": "Mazda", "model": "Mazda 3", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 86, "brand": "Mazda", "model": "Mazda 3", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 87, "brand": "Mazda", "model": "Mazda 3", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 88, "brand": "Mazda", "model": "Mazda 6", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 89, "brand": "Mazda", "model": "Mazda 6", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 90, "brand": "Mazda", "model": "Mazda 6", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 91, "brand": "Mazda", "model": "CX-5", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 92, "brand": "Mazda", "model": "CX-5", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 93, "brand": "Mazda", "model": "CX-5", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 94, "brand": "Mitsubishi", "model": "Lancer", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 95, "brand": "Mitsubishi", "model": "Lancer", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 96, "brand": "Mitsubishi", "model": "Lancer", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 97, "brand": "Mitsubishi", "model": "Outlander", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 98, "brand": "Mitsubishi", "model": "Outlander", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 99, "brand": "Mitsubishi", "model": "Outlander", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 100, "brand": "Mitsubishi", "model": "Pajero", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 101, "brand": "Mitsubishi", "model": "Pajero", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 102, "brand": "Mitsubishi", "model": "Pajero", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 103, "brand": "Volkswagen", "model": "Polo", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 104, "brand": "Volkswagen", "model": "Polo", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 105, "brand": "Volkswagen", "model": "Polo", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 106, "brand": "Volkswagen", "model": "Passat", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 107, "brand": "Volkswagen", "model": "Passat", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 108, "brand": "Volkswagen", "model": "Passat", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 109, "brand": "Volkswagen", "model": "Tiguan", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 110, "brand": "Volkswagen", "model": "Tiguan", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 111, "brand": "Volkswagen", "model": "Tiguan", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 112, "brand": "BMW", "model": "3 Series", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 113, "brand": "BMW", "model": "3 Series", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 114, "brand": "BMW", "model": "3 Series", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 115, "brand": "BMW", "model": "5 Series", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 116, "brand": "BMW", "model": "5 Series", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 117, "brand": "BMW", "model": "5 Series", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 118, "brand": "BMW", "model": "X5", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 119, "brand": "BMW", "model": "X5", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 120, "brand": "BMW", "model": "X5", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 121, "brand": "Mercedes-Benz", "model": "C-Class", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 122, "brand": "Mercedes-Benz", "model": "C-Class", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 123, "brand": "Mercedes-Benz", "model": "C-Class", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 124, "brand": "Mercedes-Benz", "model": "E-Class", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 125, "brand": "Mercedes-Benz", "model": "E-Class", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 126, "brand": "Mercedes-Benz", "model": "E-Class", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 127, "brand": "Mercedes-Benz", "model": "GLE", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 128, "brand": "Mercedes-Benz", "model": "GLE", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 129, "brand": "Mercedes-Benz", "model": "GLE", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 130, "brand": "Audi", "model": "A4", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 131, "brand": "Audi", "model": "A4", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 132, "brand": "Audi", "model": "A4", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 133, "brand": "Audi", "model": "A6", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 134, "brand": "Audi", "model": "A6", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 135, "brand": "Audi", "model": "A6", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 136, "brand": "Audi", "model": "Q5", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 137, "brand": "Audi", "model": "Q5", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 138, "brand": "Audi", "model": "Q5", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 139, "brand": "Skoda", "model": "Octavia", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 140, "brand": "Skoda", "model": "Octavia", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 141, "brand": "Skoda", "model": "Octavia", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 142, "brand": "Skoda", "model": "Rapid", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 143, "brand": "Skoda", "model": "Rapid", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 144, "brand": "Skoda", "model": "Rapid", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 145, "brand": "Skoda", "model": "Kodiaq", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 146, "brand": "Skoda", "model": "Kodiaq", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 147, "brand": "Skoda", "model": "Kodiaq", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 148, "brand": "Renault", "model": "Logan", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 149, "brand": "Renault", "model": "Logan", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 150, "brand": "Renault", "model": "Logan", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 151, "brand": "Renault", "model": "Duster", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 152, "brand": "Renault", "model": "Duster", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 153, "brand": "Renault", "model": "Duster", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 154, "brand": "Renault", "model": "Sandero", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 155, "brand": "Renault", "model": "Sandero", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 156, "brand": "Renault", "model": "Sandero", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 157, "brand": "Ford", "model": "Focus", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 158, "brand": "Ford", "model": "Focus", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 159, "brand": "Ford", "model": "Focus", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 160, "brand": "Ford", "model": "Mondeo", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 161, "brand": "Ford", "model": "Mondeo", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 162, "brand": "Ford", "model": "Mondeo", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 163, "brand": "Ford", "model": "Explorer", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 164, "brand": "Ford", "model": "Explorer", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 165, "brand": "Ford", "model": "Explorer", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 166, "brand": "Subaru", "model": "Forester", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 167, "brand": "Subaru", "model": "Forester", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 168, "brand": "Subaru", "model": "Forester", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 169, "brand": "Subaru", "model": "Outback", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 170, "brand": "Subaru", "model": "Outback", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 171, "brand": "Subaru", "model": "Outback", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 172, "brand": "Subaru", "model": "Legacy", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 173, "brand": "Subaru", "model": "Legacy", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 174, "brand": "Subaru", "model": "Legacy", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 175, "brand": "Geely", "model": "Coolray", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 176, "brand": "Geely", "model": "Coolray", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 177, "brand": "Geely", "model": "Coolray", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 178, "brand": "Geely", "model": "Atlas", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 179, "brand": "Geely", "model": "Atlas", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 180, "brand": "Geely", "model": "Atlas", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 181, "brand": "Geely", "model": "Monjaro", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 182, "brand": "Geely", "model": "Monjaro", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 183, "brand": "Geely", "model": "Monjaro", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 184, "brand": "Chery", "model": "Tiggo 4", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 185, "brand": "Chery", "model": "Tiggo 4", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 186, "brand": "Chery", "model": "Tiggo 4", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 187, "brand": "Chery", "model": "Tiggo 7", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 188, "brand": "Chery", "model": "Tiggo 7", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 189, "brand": "Chery", "model": "Tiggo 7", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 190, "brand": "Chery", "model": "Tiggo 8", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 191, "brand": "Chery", "model": "Tiggo 8", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 192, "brand": "Chery", "model": "Tiggo 8", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 193, "brand": "Haval", "model": "Jolion", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 194, "brand": "Haval", "model": "Jolion", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 195, "brand": "Haval", "model": "Jolion", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 196, "brand": "Haval", "model": "F7", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 197, "brand": "Haval", "model": "F7", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 198, "brand": "Haval", "model": "F7", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}, {"id": 199, "brand": "Haval", "model": "Dargo", "category": "Передние колодки", "name": "HI-Q Передние колодки", "sp": "", "price": 18500, "stock": 10, "emoji": "🛞"}, {"id": 200, "brand": "Haval", "model": "Dargo", "category": "Задние колодки", "name": "HI-Q Задние колодки", "sp": "", "price": 15500, "stock": 10, "emoji": "🛞"}, {"id": 201, "brand": "Haval", "model": "Dargo", "category": "Тормозные диски", "name": "HI-Q Тормозные диски", "sp": "", "price": 32000, "stock": 10, "emoji": "⚙️"}];
+const carModels = {"Toyota": ["Camry", "Corolla", "RAV4", "Prado", "Land Cruiser"], "Lexus": ["RX", "ES", "LX", "GX"], "Hyundai": ["Accent", "Elantra", "Sonata", "Tucson"], "Kia": ["Rio", "K5", "Sportage", "Sorento"], "Chevrolet": ["Cobalt", "Onix", "Nexia", "Cruze"], "Nissan": ["Qashqai", "X-Trail", "Teana", "Almera"], "Honda": ["Civic", "Accord", "CR-V"], "Mazda": ["Mazda 3", "Mazda 6", "CX-5"], "Mitsubishi": ["Lancer", "Outlander", "Pajero"], "Volkswagen": ["Polo", "Passat", "Tiguan"], "BMW": ["3 Series", "5 Series", "X5"], "Mercedes-Benz": ["C-Class", "E-Class", "GLE"], "Audi": ["A4", "A6", "Q5"], "Skoda": ["Octavia", "Rapid", "Kodiaq"], "Renault": ["Logan", "Duster", "Sandero"], "Ford": ["Focus", "Mondeo", "Explorer"], "Subaru": ["Forester", "Outback", "Legacy"], "Geely": ["Coolray", "Atlas", "Monjaro"], "Chery": ["Tiggo 4", "Tiggo 7", "Tiggo 8"], "Haval": ["Jolion", "F7", "Dargo"]};
+let cart = [];
+
+function money(n){
+return n.toLocaleString("ru-RU")+" ₸";
+}
+
+function safe(t){
+return String(t).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",
+'"':"&quot;","'":"&#39;"
+})[c]);
+}
+
+function setup(){
+const select=document.getElementById("brand");
+Object.keys(carModels).sort().forEach(brand=>{
+const option=document.createElement("option");
+option.value=brand;
+option.textContent=brand;
+select.appendChild(option);
+});
+}
+
+function updateModels(){
+const brand=document.getElementById("brand").value;
+const model=document.getElementById("model");
+model.innerHTML='<option value="">Все модели</option>';
+(carModels[brand]||[]).forEach(name=>{
+const option=document.createElement("option");
+option.value=name;
+option.textContent=name;
+model.appendChild(option);
+});
+render();
+}
+
+function render(){
+const q=document.getElementById("search").value.toLowerCase();
+const brand=document.getElementById("brand").value;
+const model=document.getElementById("model").value;
+const category=document.getElementById("category").value;
+
+const list=products.filter(p=>
+(p.name+" "+p.sp+" "+p.brand+" "+p.model).toLowerCase().includes(q)
+&&(!brand||p.brand===brand)
+&&(!model||p.model===model)
+&&(!category||p.category===category)
+);
+
+document.getElementById("found").textContent="Найдено: "+list.length;
+
+document.getElementById("grid").innerHTML=list.map(p=>`
+<div class="card">
+<div class="visual">${p.emoji}</div>
+<div class="info">
+<div class="code">${p.sp?safe(p.sp)+" (демо)":"SP: уточняется"}</div>
+<h3>${safe(p.name)}</h3>
+<p class="muted">🚗 ${safe(p.brand)} ${safe(p.model)}</p>
+<p class="muted">${safe(p.category)}</p>
+<div class="price">${money(p.price)}</div>
+<button class="add" onclick="addCart(${p.id})">🛒 В корзину</button>
+</div>
+</div>
+`).join("");
+}
+
+function addCart(id){
+const item=cart.find(x=>x.id===id);
+if(item){
+if(item.qty>=10){alert("Максимум 10 штук");return;}
+item.qty++;
+}else{
+cart.push({id,qty:1});
+}
+updateCount();
+alert("Товар добавлен в корзину!");
+}
+
+function updateCount(){
+document.getElementById("count").textContent=
+cart.reduce((s,x)=>s+x.qty,0);
+}
+
+function showPage(page){
+document.getElementById("catalog").classList.toggle("hidden",page!=="catalog");
+document.getElementById("cart").classList.toggle("hidden",page!=="cart");
+if(page==="cart")renderCart();
+}
+
+function changeQty(id,d){
+const item=cart.find(x=>x.id===id);
+if(!item)return;
+item.qty+=d;
+if(item.qty<=0)cart=cart.filter(x=>x.id!==id);
+if(item.qty>10)item.qty=10;
+updateCount();
+renderCart();
+}
+
+function renderCart(){
+let sum=0;
+document.getElementById("items").innerHTML=cart.length?cart.map(item=>{
+const p=products.find(x=>x.id===item.id);
+sum+=p.price*item.qty;
+return `<div class="item">
+<b>${safe(p.name)}</b><br>
+${safe(p.brand)} ${safe(p.model)}<br>
+${safe(p.sp||"SP уточняется")}<br>
+${money(p.price)} × ${item.qty}<br>
+<button class="small" onclick="changeQty(${p.id},-1)">−</button>
+<button class="small" onclick="changeQty(${p.id},1)">+</button>
+</div>`;
+}).join(""):"Корзина пуста.";
+document.getElementById("total").textContent="Итого: "+money(sum);
+}
+
+function checkout(){
+const name=document.getElementById("customer").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const car=document.getElementById("customerCar").value.trim();
+
+if(!cart.length){alert("Корзина пуста!");return;}
+if(!name||!phone||!car){alert("Заполните все поля!");return;}
+
+let sum=0;
+const lines=cart.map(item=>{
+const p=products.find(x=>x.id===item.id);
+sum+=p.price*item.qty;
+return p.name+" | "+p.brand+" "+p.model+
+" | "+(p.sp||"SP уточняется")+
+" | "+item.qty+" шт. | "+money(p.price*item.qty);
+});
+
+const message=[
+"Здравствуйте! Заказ AutoCars",
+"Клиент: "+name,
+"Телефон: "+phone,
+"Автомобиль: "+car,
+"",
+...lines,
+"",
+"Итого: "+money(sum),
+"Прошу уточнить наличие и совместимость."
+].join("\n");
+
+window.open("https://wa.me/77785019388?text="+encodeURIComponent(message),"_blank");
+}
+
+setup();
+render();
+</script>
+</body>
+</html>
